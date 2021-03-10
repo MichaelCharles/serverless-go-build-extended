@@ -1,4 +1,4 @@
-# Serverless Go Build Extended (For Comptabilitiy with Serverless Offline)
+# Serverless Go Build Extended (For Compatibility with Serverless Offline)
 
 Forked from [Sean Keenan](https://github.com/sean9keenan)'s super helpful [serverless-go-build](https://github.com/sean9keenan/serverless-go-build) repository.
 
