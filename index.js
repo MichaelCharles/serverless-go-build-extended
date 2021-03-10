@@ -133,7 +133,7 @@ class ServerlessPlugin {
 
     const functions = this.getGoConfigParam("useBinPathForHandler") === true ? rawFunctions.map(func => ({
       ...func,
-      handler: func.handler.substring(4) + '.go'
+      handler: func.handler.substring(this.getGoConfigParam("binPath").length + 1) + '.go'
     })) : rawFunctions
 
     // 
