@@ -1,6 +1,6 @@
 {
   "name": "serverless-go-build-extended",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Serverless plugin to build your go binaries, extended for compatibility with serverless-offline.",
   "main": "index.js",
   "author": "Michael Charles Aubrey <aubrey@michaelcharl.es> (https://michaelcharl.es/aubrey)",
