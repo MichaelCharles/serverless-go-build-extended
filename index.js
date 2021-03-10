@@ -129,7 +129,12 @@ class ServerlessPlugin {
     }
 
     // Retrieve the full objects
-    const functions = functionNames.map((func) => this.serverless.service.getFunction(func))
+    const rawFunctions = functionNames.map((func) => this.serverless.service.getFunction(func))
+
+    const functions = this.getGoConfigParam("useBinPathForHandler") === true ? rawFunctions.map(func => ({
+      ...func,
+      handler: func.handler.substring(4) + '.go'
+    })) : rawFunctions
 
     // 
     // Filter out functions that are not the expected runtime
