@@ -75,6 +75,8 @@ class ServerlessPlugin {
             usage:
               'Not yet active: If the build should be made for the local machine (otherwise defaults to AWS deployment)',
             shortcut: 'l',
+            required: false,
+            type: 'boolean', 
           },
         },
       },
