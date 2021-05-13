@@ -44,7 +44,7 @@ const defaultGoDict = {
 }
 
 function format(str, arr) {
-  return str.replace(/%(\d+)/g, function(_,m) {
+  return str.replace(/%(\d+)/g, function (_, m) {
     return arr[--m];
   });
 }
@@ -76,7 +76,7 @@ class ServerlessPlugin {
               'Not yet active: If the build should be made for the local machine (otherwise defaults to AWS deployment)',
             shortcut: 'l',
             required: false,
-            type: 'boolean', 
+            type: 'boolean',
           },
         },
       },
@@ -122,7 +122,7 @@ class ServerlessPlugin {
    */
   getRelevantGoFunctions() {
     let functionNames;
-    
+
     if (this.options.function) {
       functionNames = [this.options.function];
     } else {
@@ -225,12 +225,12 @@ class ServerlessPlugin {
     // Get filename from the modulePath
     const mainBasePath = this.getGoConfigParam('generatedMainPath')
     // Get module name by replacing everything in the leading path (TODO: switch to library)
-    const moduleName   = modulePath.replace(/^.*[\\\/]/, '')
+    const moduleName = modulePath.replace(/^.*[\\\/]/, '')
     // Generate full path to generated go file
-    const mainPath     = path.join(mainBasePath, modulePath, publicFunctionName, "main.go")
+    const mainPath = path.join(mainBasePath, modulePath, publicFunctionName, "main.go")
 
     return {
-      func, 
+      func,
       publicFunctionName,
       modulePath,
       moduleName,
@@ -264,17 +264,17 @@ class ServerlessPlugin {
       const goPath = this.getGoPath()
       const fullModulePath = `${this.serverless.config.servicePath}/${funcMap.modulePath}`
 
-      if (!fullModulePath.startsWith(goPath)){
+      if (!fullModulePath.startsWith(goPath)) {
         // Couldn't build file - output appropriate errors
         console.log(chalk.red(`"Module path not in GOPATH - set gopath in serverless if needed"`));
         throw Error("Module path not in GOPATH - set gopath in serverless if needed")
       }
 
       // Variables needed to generated main file
-      const outPath      = path.join(this.serverless.config.servicePath, funcMap.mainPath)
-      const moduleName   = funcMap.moduleName
-      const modulePath   = fullModulePath.substr(goPath.length)
-      const pubFunc      = funcMap.publicFunctionName
+      const outPath = path.join(this.serverless.config.servicePath, funcMap.mainPath)
+      const moduleName = funcMap.moduleName
+      const modulePath = fullModulePath.substr(goPath.length)
+      const pubFunc = funcMap.publicFunctionName
       const pathToLambda = this.getGoConfigParam('pathToAWSLambda')
 
       return createMainGo(outPath, modulePath, moduleName, pubFunc, pathToLambda).catch(err => {
@@ -311,9 +311,9 @@ class ServerlessPlugin {
       // Return a promise executing the build command
       return execPromise(buildCmd).catch(err => {
         // Couldn't build file - output appropriate errors
-        console.log(chalk.red(`Error building golang file at ${func.handler}\n` + 
-                              `To replicate please run:\n` + 
-                              `${buildCmd}\n`));
+        console.log(chalk.red(`Error building golang file at ${func.handler}\n` +
+          `To replicate please run:\n` +
+          `${buildCmd}\n`));
         throw Error("Go build failure")
       });
     });
@@ -339,35 +339,35 @@ class ServerlessPlugin {
       return this.serverless.pluginManager.spawn(
         plugin, { terminateLifecycleAfterExecution: false });
     })
-    .delay(testStartDelay)
-    .then(result => {
-      return BbPromise.mapSeries(tests, test => {
-        // Construct the test command
-        const testPrefix = this.getGoConfigParam('testCmd')
-        const testCmd = format(testPrefix, [test])
+      .delay(testStartDelay)
+      .then(result => {
+        return BbPromise.mapSeries(tests, test => {
+          // Construct the test command
+          const testPrefix = this.getGoConfigParam('testCmd')
+          const testCmd = format(testPrefix, [test])
 
-        // Return a promise executing the build command
-        return execPromise(testCmd).catch(err => {
-          // Couldn't build file - output appropriate errors
-          console.log(chalk.red(`Error running test on ${test}\n` + 
-                                `To replicate please run:\n` + 
-                                `${testCmd}\n`));
-          throw Error("Go test failure")
+          // Return a promise executing the build command
+          return execPromise(testCmd).catch(err => {
+            // Couldn't build file - output appropriate errors
+            console.log(chalk.red(`Error running test on ${test}\n` +
+              `To replicate please run:\n` +
+              `${testCmd}\n`));
+            throw Error("Go test failure")
+          });
         });
-      });
-    })
-    .then(result => {
+      })
+      .then(result => {
 
-      this.serverless.cli.log(`Tests successfully exited`);
-      // Unfortunately there does not seem to be a clean way
-      // to quit out of serverless without throwing an error
-      // and thus returning a non-zero response which is 
-      // unacceptable when running tests.
-      // Simply exit the process with a success.
-      // Re-add the BbPromise reject for a slightly cleaner exit
-      process.exit(0)
-      // return BbPromise.reject(new TerminateOnTestFinishSuccess())
-    })
+        this.serverless.cli.log(`Tests successfully exited`);
+        // Unfortunately there does not seem to be a clean way
+        // to quit out of serverless without throwing an error
+        // and thus returning a non-zero response which is 
+        // unacceptable when running tests.
+        // Simply exit the process with a success.
+        // Re-add the BbPromise reject for a slightly cleaner exit
+        process.exit(0)
+        // return BbPromise.reject(new TerminateOnTestFinishSuccess())
+      })
   }
 
   /**
