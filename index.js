@@ -133,10 +133,14 @@ class ServerlessPlugin {
     // Retrieve the full objects
     const rawFunctions = functionNames.map((func) => this.serverless.service.getFunction(func))
 
-    const functions = this.getGoConfigParam("useBinPathForHandler") === true ? rawFunctions.map(func => ({
-      ...func,
-      handler: func.handler.substring(this.getGoConfigParam("binPath").length + 1) + '.go'
-    })) : rawFunctions
+    const functions = this.getGoConfigParam("useBinPathForHandler") === true ? rawFunctions.map(func => {
+      const p = func.handler.substring(this.getGoConfigParam("binPath").length + 1).split('/');
+      p.pop();
+      return {
+        ...func,
+        handler: p.join('/') + '/*.go'
+      }
+    }) : rawFunctions
 
     // 
     // Filter out functions that are not the expected runtime
@@ -166,10 +170,13 @@ class ServerlessPlugin {
    * @return {string}      -- Path of binary
    */
   getOutputBin(func) {
-      let outputbin = func.handler.replace(/\.go$/, "")
-      const binPath = this.getGoConfigParam('binPath')
-      outputbin = path.join(binPath, outputbin)
-      return outputbin
+    let outputbin = func.handler.replace(/\.go$/, "")
+    if (this.getGoConfigParam("useBinPathForHandler")) {
+      outputbin = outputbin.replace(/\*$/, "main")
+    }
+    const binPath = this.getGoConfigParam('binPath')
+    outputbin = path.join(binPath, outputbin)
+    return outputbin
   }
 
 
